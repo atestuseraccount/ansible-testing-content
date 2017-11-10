@@ -49,7 +49,6 @@ galaxy_info:
         - xenial
 
   cloud_platforms:
-    - AWS
     - OpenStack
 
   galaxy_tags: []
