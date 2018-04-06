@@ -2,10 +2,23 @@
 # -*- coding: utf-8 -*-
 #
 # (c) 2014, Jens Depuydt <http://www.jensd.be>
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# GNU General Public License v3.0+
+# See COPYING or https://www.gnu.org/licenses/gpl-3.0.txt
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
+
+import traceback
+
+try:
+    import psycopg2
+except ImportError:
+    postgresqldb_found = False
+else:
+    postgresqldb_found = True
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils._text import to_native
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
@@ -16,20 +29,23 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: postgresql_lang
-short_description: Adds, removes or changes procedural languages with a PostgreSQL database.
+short_description: >
+    Adds, removes or changes procedural languages with a PostgreSQL database.
 description:
    - Adds, removes or changes procedural languages with a PostgreSQL database.
-   - This module allows you to add a language, remote a language or change the trust
-     relationship with a PostgreSQL database. The module can be used on the machine
-     where executed or on a remote host.
-   - When removing a language from a database, it is possible that dependencies prevent
-     the database from being removed. In that case, you can specify casade to
-     automatically drop objects that depend on the language (such as functions in the
-     language). In case the language can't be deleted because it is required by the
+   - This module allows you to add a language, remote a language or change
+     the trust relationship with a PostgreSQL database.
+     The module can be used on the machine where executed or on a remote host.
+   - When removing a language from a database, it is possible that dependencies
+     prevent the database from being removed. In that case, you can specify
+     casade to automatically drop objects that depend on the language
+     (such as functions in the language).
+     In case the language can't be deleted because it is required by the
      database system, you can specify fail_on_drop=no to ignore the error.
-   - Be carefull when marking a language as trusted since this could be a potential
-     security breach. Untrusted languages allow only users with the PostgreSQL superuser
-     privilege to use this language to create new functions.
+   - Be carefull when marking a language as trusted since this could be
+     a potential security breach. Untrusted languages allow only users with
+     the PostgreSQL superuser privilege to use this language to create
+     new functions.
 version_added: "1.7"
 options:
   lang:
@@ -50,21 +66,26 @@ options:
     default: null
   force_trust:
     description:
-      - marks the language as trusted, even if it's marked as untrusted in pg_pltemplate.
+      - marks the language as trusted, even if it's marked
+        as untrusted in pg_pltemplate.
       - use with care!
     required: false
     default: no
     choices: [ "yes", "no" ]
   fail_on_drop:
     description:
-      - if C(yes), fail when removing a language. Otherwise just log and continue
-      - in some cases, it is not possible to remove a language (used by the db-system). When         dependencies block the removal, consider using C(cascade).
+      - if C(yes), fail when removing a language.
+        Otherwise just log and continue
+      - in some cases, it is not possible to remove a language
+        (used by the db-system). When dependencies block the removal,
+        consider using C(cascade).
     required: false
     default: 'yes'
     choices: [ "yes", "no" ]
   cascade:
     description:
-      - when dropping a language, also delete object that depend on this language.
+      - when dropping a language, also delete object that depend
+        on this language.
       - only used when C(state=absent).
     required: false
     default: no
@@ -81,7 +102,8 @@ options:
     default: postgres
   login_password:
     description:
-      - Password used to authenticate with PostgreSQL (must match C(login_user))
+      - Password used to authenticate with PostgreSQL
+        (must match C(login_user))
     required: false
     default: null
   login_host:
@@ -112,7 +134,8 @@ EXAMPLES = '''
 # Add language pltclu to database testdb if it doesn't exist:
 - postgresql_lang db=testdb lang=pltclu state=present
 
-# Add language pltclu to database testdb if it doesn't exist and mark it as trusted:
+# Add language pltclu to database testdb if it doesn't exist
+# and mark it as trusted:
 # Marks the language as trusted if it exists but isn't trusted yet
 # force_trust makes sure that the language will be marked as trusted
 - postgresql_lang:
@@ -135,24 +158,14 @@ EXAMPLES = '''
     state: absent
     cascade: yes
 
-# Remove language c from database testdb but ignore errors if something prevents the removal:
+# Remove language c from database testdb but ignore errors if
+  something prevents the removal:
 - postgresql_lang:
     db: testdb
     lang: pltclu
     state: absent
     fail_on_drop: no
 '''
-import traceback
-
-try:
-    import psycopg2
-except ImportError:
-    postgresqldb_found = False
-else:
-    postgresqldb_found = True
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils._text import to_native
 
 
 def lang_exists(cursor, lang):
@@ -161,17 +174,20 @@ def lang_exists(cursor, lang):
     cursor.execute(query)
     return cursor.rowcount > 0
 
+
 def lang_istrusted(cursor, lang):
     """Checks if language is trusted for db"""
     query = "SELECT lanpltrusted FROM pg_language WHERE lanname='%s'" % lang
     cursor.execute(query)
     return cursor.fetchone()[0]
 
+
 def lang_altertrust(cursor, lang, trust):
     """Changes if language is trusted for db"""
     query = "UPDATE pg_language SET lanpltrusted = %s WHERE lanname=%s"
     cursor.execute(query, (trust, lang))
     return True
+
 
 def lang_add(cursor, lang, trust):
     """Adds language for db"""
@@ -182,6 +198,7 @@ def lang_add(cursor, lang, trust):
     cursor.execute(query)
     return True
 
+
 def lang_drop(cursor, lang, cascade):
     """Drops language for db"""
     cursor.execute("SAVEPOINT ansible_pgsql_lang_drop")
@@ -190,12 +207,13 @@ def lang_drop(cursor, lang, cascade):
             cursor.execute("DROP LANGUAGE \"%s\" CASCADE" % lang)
         else:
             cursor.execute("DROP LANGUAGE \"%s\"" % lang)
-    except:
+    except Exception:
         cursor.execute("ROLLBACK TO SAVEPOINT ansible_pgsql_lang_drop")
         cursor.execute("RELEASE SAVEPOINT ansible_pgsql_lang_drop")
         return False
     cursor.execute("RELEASE SAVEPOINT ansible_pgsql_lang_drop")
     return True
+
 
 def main():
     module = AnsibleModule(
@@ -212,7 +230,7 @@ def main():
             cascade=dict(type='bool', default='no'),
             fail_on_drop=dict(type='bool', default='yes'),
         ),
-        supports_check_mode = True
+        supports_check_mode=True
     )
 
     db = module.params["db"]
@@ -227,19 +245,20 @@ def main():
         module.fail_json(msg="the python psycopg2 module is required")
 
     params_map = {
-        "login_host":"host",
-        "login_user":"user",
-        "login_password":"password",
-        "port":"port",
-        "db":"database"
+        "login_host": "host",
+        "login_user": "user",
+        "login_password": "password",
+        "port": "port",
+        "db": "database"
     }
-    kw = dict( (params_map[k], v) for (k, v) in module.params.items()
-              if k in params_map and v != "" )
+    kw = dict((params_map[k], v) for (k, v) in module.params.items()
+              if k in params_map and v != "")
     try:
         db_connection = psycopg2.connect(**kw)
         cursor = db_connection.cursor()
     except Exception as e:
-        module.fail_json(msg="unable to connect to database: %s" % to_native(e), exception=traceback.format_exc())
+        module.fail_json(msg="unable to connect to database: %s" %
+                         to_native(e), exception=traceback.format_exc())
     changed = False
     kw = {'db': db, 'lang': lang, 'trust': trust}
 
@@ -267,7 +286,8 @@ def main():
             else:
                 changed = lang_drop(cursor, lang, cascade)
                 if fail_on_drop and not changed:
-                    msg = "unable to drop language, use cascade to delete dependencies or fail_on_drop=no to ignore"
+                    msg = ("unable to drop language, use cascade to delete "
+                           "dependencies or fail_on_drop=no to ignore")
                     module.fail_json(msg=msg)
                 kw['lang_dropped'] = changed
 
