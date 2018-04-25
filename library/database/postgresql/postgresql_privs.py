@@ -256,7 +256,7 @@ except ImportError:
 # import module snippets
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.database import pg_quote_identifier
-from ansible.module_utils._text import to_native, to_text
+from ansible.module_utils._text import to_native
 
 
 VALID_PRIVS = frozenset(('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'TRUNCATE',
@@ -478,7 +478,7 @@ class Connection(object):
             for obj in objs:
                 try:
                     f, args = obj.split('(', 1)
-                except:
+                except Exception:
                     raise Error('Illegal function signature: "%s".' % obj)
                 obj_ids.append('"%s"."%s"(%s' % (schema_qualifier, f, args))
         elif obj_type in ['table', 'sequence']:
