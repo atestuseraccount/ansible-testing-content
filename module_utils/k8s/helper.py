@@ -572,10 +572,10 @@ class AnsibleMixin(object):
                 label = prop
 
                 # Provide a more human-friendly version of the prefix
-                #alternate_label = label\
-                #    .replace('spec', '')\
-                #    .replace('template', '')\
-                #    .replace('config', '')
+                # alternate_label = label\
+                #     .replace('spec', '')\
+                #     .replace('template', '')\
+                #     .replace('config', '')
 
                 p = prefix
                 p += '_' + label if p else label
