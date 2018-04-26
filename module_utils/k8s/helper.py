@@ -19,7 +19,7 @@
 import base64
 import copy
 
-from ansible.module_utils.six import iteritems, string_types
+from ansible.module_utils.six import iteritems
 from keyword import kwlist
 
 try:
@@ -143,8 +143,7 @@ class AnsibleMixin(object):
                 obj.metadata.annotations['openshift.io/display-name'] = module_params['display_name']
             if module_params.get('description'):
                 obj.metadata.annotations['openshift.io/description'] = module_params['description']
-        elif (self.kind.lower() == 'secret' and getattr(obj, 'string_data', None)
-                and hasattr(obj, 'data')):
+        elif (self.kind.lower() == 'secret' and getattr(obj, 'string_data', None) and hasattr(obj, 'data')):
             if obj.data is None:
                 obj.data = {}
 
@@ -573,10 +572,10 @@ class AnsibleMixin(object):
                 label = prop
 
                 # Provide a more human-friendly version of the prefix
-                alternate_label = label\
-                    .replace('spec', '')\
-                    .replace('template', '')\
-                    .replace('config', '')
+                #alternate_label = label\
+                #    .replace('spec', '')\
+                #    .replace('template', '')\
+                #    .replace('config', '')
 
                 p = prefix
                 p += '_' + label if p else label
