@@ -108,7 +108,8 @@ options:
         choices: ['always', 'on_create']
         version_added: "2.1"
         description:
-          - C(always) will update passwords if they differ.  C(on_create) will only set the password for newly created users.
+          - C(always) will update passwords if they differ.  C(on_create) will only set the password
+            for newly created users.
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
