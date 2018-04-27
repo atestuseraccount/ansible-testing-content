@@ -208,14 +208,14 @@ def main():
         info = r.info()
         if mode == "master" and info["role"] == "master":
             module.exit_json(changed=False, mode=mode)
-        elif mode == "slave" and info["role"] == "slave" and info["master_host"] == master_host and /
+        elif mode == "slave" and info["role"] == "slave" and info["master_host"] == master_host and \
             info["master_port"] == master_port:
                 status = dict(
                     status=mode,
                     master_host=master_host,
                     master_port=master_port,
                 )
-            module.exit_json(changed=False, mode=status)
+                module.exit_json(changed=False, mode=status)
         else:
             # Do the stuff
             # (Check Check_mode before commands so the commands aren't evaluated
