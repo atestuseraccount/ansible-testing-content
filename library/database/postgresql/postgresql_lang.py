@@ -58,7 +58,8 @@ options:
   fail_on_drop:
     description:
       - if C(yes), fail when removing a language. Otherwise just log and continue
-      - in some cases, it is not possible to remove a language (used by the db-system). When         dependencies block the removal, consider using C(cascade).
+      - in some cases, it is not possible to remove a language (used by the db-system). When
+        dependencies block the removal, consider using C(cascade).
     required: false
     default: 'yes'
     choices: [ "yes", "no" ]

@@ -27,7 +27,8 @@ author: "Balazs Pocze (@banyek)"
 options:
     mode:
         description:
-            - module operating mode. Could be getslave (SHOW SLAVE STATUS), getmaster (SHOW MASTER STATUS), changemaster (CHANGE MASTER TO), startslave
+            - module operating mode. Could be getslave (SHOW SLAVE STATUS), getmaster (SHOW MASTER STATUS),
+              changemaster (CHANGE MASTER TO), startslave
               (START SLAVE), stopslave (STOP SLAVE), resetslave (RESET SLAVE), resetslaveall (RESET SLAVE ALL)
         required: False
         choices:
@@ -195,7 +196,8 @@ def main():
             login_host=dict(default="localhost"),
             login_port=dict(default=3306, type='int'),
             login_unix_socket=dict(default=None),
-            mode=dict(default="getslave", choices=["getmaster", "getslave", "changemaster", "stopslave", "startslave", "resetslave", "resetslaveall"]),
+            mode=dict(default="getslave", choices=["getmaster", "getslave", "changemaster", "stopslave",
+                                                   "startslave", "resetslave", "resetslaveall"]),
             master_auto_position=dict(default=False, type='bool'),
             master_host=dict(default=None),
             master_user=dict(default=None),
@@ -251,11 +253,13 @@ def main():
     login_user = module.params["login_user"]
 
     try:
-        cursor = mysql_connect(module, login_user, login_password, config_file, ssl_cert, ssl_key, ssl_ca, None, 'MySQLdb.cursors.DictCursor',
+        cursor = mysql_connect(module, login_user, login_password, config_file, ssl_cert,
+                               ssl_key, ssl_ca, None, 'MySQLdb.cursors.DictCursor',
                                connect_timeout=connect_timeout)
     except Exception as e:
         if os.path.exists(config_file):
-            module.fail_json(msg="unable to connect to database, check login_user and login_password are correct or %s has the credentials. "
+            module.fail_json(msg="unable to connect to database, check login_user and login_password"
+                                 "are correct or %s has the credentials. "
                                  "Exception message: %s" % (config_file, to_native(e)))
         else:
             module.fail_json(msg="unable to find %s. Exception message: %s" % (config_file, to_native(e)))

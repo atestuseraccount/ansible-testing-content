@@ -201,19 +201,20 @@ def main():
         try:
             r.ping()
         except Exception as e:
-            module.fail_json(msg="unable to connect to database: %s" % to_native(e), exception=traceback.format_exc())
+            module.fail_json(msg="unable to connect to database: %s" % to_native(e),
+                             exception=traceback.format_exc())
 
         # Check if we are already in the mode that we want
         info = r.info()
         if mode == "master" and info["role"] == "master":
             module.exit_json(changed=False, mode=mode)
-
-        elif mode == "slave" and info["role"] == "slave" and info["master_host"] == master_host and info["master_port"] == master_port:
-            status = dict(
-                status=mode,
-                master_host=master_host,
-                master_port=master_port,
-            )
+        elif mode == "slave" and info["role"] == "slave" and info["master_host"] == master_host and /
+            info["master_port"] == master_port:
+                status = dict(
+                    status=mode,
+                    master_host=master_host,
+                    master_port=master_port,
+                )
             module.exit_json(changed=False, mode=status)
         else:
             # Do the stuff
@@ -253,7 +254,8 @@ def main():
         try:
             r.ping()
         except Exception as e:
-            module.fail_json(msg="unable to connect to database: %s" % to_native(e), exception=traceback.format_exc())
+            module.fail_json(msg="unable to connect to database: %s" % to_native(e),
+                             exception=traceback.format_exc())
 
         # Do the stuff
         # (Check Check_mode before commands so the commands aren't evaluated
@@ -278,7 +280,8 @@ def main():
         try:
             r.ping()
         except Exception as e:
-            module.fail_json(msg="unable to connect to database: %s" % to_native(e), exception=traceback.format_exc())
+            module.fail_json(msg="unable to connect to database: %s" % to_native(e),
+                             exception=traceback.format_exc())
 
         try:
             old_value = r.config_get(name)[name]
@@ -292,7 +295,8 @@ def main():
             try:
                 r.config_set(name, value)
             except Exception as e:
-                module.fail_json(msg="unable to write config: %s" % to_native(e), exception=traceback.format_exc())
+                module.fail_json(msg="unable to write config: %s" % to_native(e),
+                                 exception=traceback.format_exc())
             module.exit_json(changed=changed, name=name, value=value)
     else:
         module.fail_json(msg='A valid command must be provided')

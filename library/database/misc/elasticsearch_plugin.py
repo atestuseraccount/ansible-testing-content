@@ -222,7 +222,8 @@ def get_plugin_bin(module, plugin_bin=None):
                 break
 
     if not valid_plugin_bin:
-        module.fail_json(msg='%s does not exist and no other valid plugin installers were found. Make sure Elasticsearch is installed.' % plugin_bin)
+        module.fail_json(msg='%s does not exist and no other valid plugin installers were found. '
+                         'Make sure Elasticsearch is installed.' % plugin_bin)
 
     return valid_plugin_bin
 
@@ -263,12 +264,14 @@ def main():
         module.exit_json(changed=False, name=name, state=state)
 
     if state == "present":
-        changed, cmd, out, err = install_plugin(module, plugin_bin, name, version, url, proxy_host, proxy_port, timeout)
+        changed, cmd, out, err = install_plugin(module, plugin_bin, name, version, url, proxy_host,
+                                                proxy_port, timeout)
 
     elif state == "absent":
         changed, cmd, out, err = remove_plugin(module, plugin_bin, name)
 
-    module.exit_json(changed=changed, cmd=cmd, name=name, state=state, url=url, timeout=timeout, stdout=out, stderr=err)
+    module.exit_json(changed=changed, cmd=cmd, name=name, state=state, url=url, timeout=timeout,
+                     stdout=out, stderr=err)
 
 
 if __name__ == '__main__':

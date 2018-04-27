@@ -38,7 +38,8 @@ options:
     choices: [ "present", "absent", "dump", "import" ]
   collation:
     description:
-      - Collation mode (sorting). This only applies to new table/databases and does not update existing ones, this is a limitation of MySQL.
+      - Collation mode (sorting). This only applies to new table/databases and does not update
+        existing ones, this is a limitation of MySQL.
     required: false
     default: null
   encoding:
@@ -49,7 +50,8 @@ options:
   target:
     description:
       - Location, on the remote host, of the dump file to read from or write to. Uncompressed SQL
-        files (C(.sql)) as well as bzip2 (C(.bz2)), gzip (C(.gz)) and xz (Added in 2.0) compressed files are supported.
+        files (C(.sql)) as well as bzip2 (C(.bz2)), gzip (C(.gz)) and xz (Added in 2.0) compressed
+        files are supported.
     required: false
   single_transaction:
     description:
@@ -129,8 +131,9 @@ def db_delete(cursor, db):
     return True
 
 
-def db_dump(module, host, user, password, db_name, target, all_databases, port, config_file, socket=None, ssl_cert=None, ssl_key=None, ssl_ca=None,
-            single_transaction=None, quick=None):
+def db_dump(module, host, user, password, db_name, target, all_databases, port, config_file,
+            socket=None, ssl_cert=None, ssl_key=None, ssl_ca=None, single_transaction=None,
+            quick=None):
     cmd = module.get_bin_path('mysqldump', True)
     # If defined, mysqldump demands --defaults-extra-file be the first option
     if config_file:
@@ -175,7 +178,8 @@ def db_dump(module, host, user, password, db_name, target, all_databases, port, 
     return rc, stdout, stderr
 
 
-def db_import(module, host, user, password, db_name, target, all_databases, port, config_file, socket=None, ssl_cert=None, ssl_key=None, ssl_ca=None):
+def db_import(module, host, user, password, db_name, target, all_databases, port, config_file,
+              socket=None, ssl_cert=None, ssl_key=None, ssl_ca=None):
     if not os.path.exists(target):
         return module.fail_json(msg="target %s does not exist on the host" % target)
 
@@ -307,8 +311,9 @@ def main():
                                connect_timeout=connect_timeout)
     except Exception as e:
         if os.path.exists(config_file):
-            module.fail_json(msg="unable to connect to database, check login_user and login_password are correct or %s has the credentials. "
-                                 "Exception message: %s" % (config_file, to_native(e)))
+            module.fail_json(msg="unable to connect to database, check login_user and login_password "
+                             "are correct or %s has the credentials. "
+                             "Exception message: %s" % (config_file, to_native(e)))
         else:
             module.fail_json(msg="unable to find %s. Exception message: %s" % (config_file, to_native(e)))
 

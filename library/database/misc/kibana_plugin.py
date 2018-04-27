@@ -239,7 +239,8 @@ def main():
     elif state == "absent":
         changed, cmd, out, err = remove_plugin(module, plugin_bin, name)
 
-    module.exit_json(changed=changed, cmd=cmd, name=name, state=state, url=url, timeout=timeout, stdout=out, stderr=err)
+    module.exit_json(changed=changed, cmd=cmd, name=name, state=state, url=url, timeout=timeout,
+                     stdout=out, stderr=err)
 
 
 if __name__ == '__main__':

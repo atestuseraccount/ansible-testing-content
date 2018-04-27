@@ -99,13 +99,14 @@ options:
     choices: ['always', 'on_create']
     version_added: "2.0"
     description:
-      - C(always) will update passwords if they differ.  C(on_create) will only set the password for newly created users.
+      - C(always) will update passwords if they differ.  C(on_create) will only set the password for
+        newly created users.
 notes:
    - "MySQL server installs with default login_user of 'root' and no password. To secure this user
-     as part of an idempotent playbook, you must create at least two tasks: the first must change the root user's password,
-     without providing any login_user/login_password details. The second must drop a ~/.my.cnf file containing
-     the new root credentials. Subsequent runs of the playbook will then succeed by reading the new credentials from
-     the file."
+     as part of an idempotent playbook, you must create at least two tasks: the first must change the
+     root user's password, without providing any login_user/login_password details. The second must drop
+     a ~/.my.cnf file containing the new root credentials. Subsequent runs of the playbook will then succeed
+     by reading the new credentials from the file."
    - Currently, there is only support for the `mysql_native_password` encrypted password hash module.
 
 author: "Jonathan Mainguy (@Jmainguy)"
@@ -132,7 +133,8 @@ EXAMPLES = """
     priv: '*.*:ALL'
     state: present
 
-# Create database user with name 'bob' and previously hashed mysql native password '*EE0D72C1085C46C5278932678FBE2C6A782821B4' with all database privileges
+# Create database user with name 'bob' and previously hashed mysql native password
+# '*EE0D72C1085C46C5278932678FBE2C6A782821B4' with all database privileges
 - mysql_user:
     name: bob
     password: '*EE0D72C1085C46C5278932678FBE2C6A782821B4'
@@ -147,7 +149,8 @@ EXAMPLES = """
     priv: '*.*:ALL,GRANT'
     state: present
 
-# Modify user Bob to require SSL connections. Note that REQUIRESSL is a special privilege that should only apply to *.* by itself.
+# Modify user Bob to require SSL connections. Note that REQUIRESSL is a special privilege that should
+# only apply to *.* by itself.
 - mysql_user:
     name: bob
     append_privs: true
@@ -326,7 +329,8 @@ def user_mod(cursor, user, host, host_all, password, encrypted, new_priv, append
             if old_user_mgmt:
                 cursor.execute("SELECT password FROM user WHERE user = %s AND host = %s", (user, host))
             else:
-                cursor.execute("SELECT authentication_string FROM user WHERE user = %s AND host = %s", (user, host))
+                cursor.execute("SELECT authentication_string FROM user WHERE user = %s AND host = %s",
+                               (user, host))
             current_pass_hash = cursor.fetchone()
 
             if encrypted:
@@ -338,10 +342,12 @@ def user_mod(cursor, user, host, host_all, password, encrypted, new_priv, append
                         if old_user_mgmt:
                             cursor.execute("SET PASSWORD FOR %s@%s = %s", (user, host, password))
                         else:
-                            cursor.execute("ALTER USER %s@%s IDENTIFIED WITH mysql_native_password AS %s", (user, host, password))
+                            cursor.execute("ALTER USER %s@%s IDENTIFIED WITH mysql_native_password AS %s",
+                                           (user, host, password))
                         changed = True
                 else:
-                    module.fail_json(msg="encrypted was specified however it does not appear to be a valid hash expecting: *SHA1(SHA1(your_password))")
+                    module.fail_json(msg="encrypted was specified however it does not appear to be a valid "
+                                     "hash expecting: *SHA1(SHA1(your_password))")
             else:
                 if old_user_mgmt:
                     cursor.execute("SELECT PASSWORD(%s)", (password,))
@@ -354,7 +360,8 @@ def user_mod(cursor, user, host, host_all, password, encrypted, new_priv, append
                     if old_user_mgmt:
                         cursor.execute("SET PASSWORD FOR %s@%s = PASSWORD(%s)", (user, host, password))
                     else:
-                        cursor.execute("ALTER USER %s@%s IDENTIFIED WITH mysql_native_password BY %s", (user, host, password))
+                        cursor.execute("ALTER USER %s@%s IDENTIFIED WITH mysql_native_password BY %s",
+                                       (user, host, password))
                     changed = True
 
         # Handle privileges
@@ -606,8 +613,9 @@ def main():
             cursor = mysql_connect(module, login_user, login_password, config_file, ssl_cert, ssl_key, ssl_ca, db,
                                    connect_timeout=connect_timeout)
     except Exception as e:
-        module.fail_json(msg="unable to connect to database, check login_user and login_password are correct or %s has the credentials. "
-                             "Exception message: %s" % (config_file, to_native(e)))
+        module.fail_json(msg="unable to connect to database, check login_user and login_password "
+                         "are correct or %s has the credentials. "
+                         "Exception message: %s" % (config_file, to_native(e)))
 
     if not sql_log_bin:
         cursor.execute("SET SQL_LOG_BIN=0;")
@@ -626,9 +634,11 @@ def main():
         if user_exists(cursor, user, host, host_all):
             try:
                 if update_password == 'always':
-                    changed = user_mod(cursor, user, host, host_all, password, encrypted, priv, append_privs, module)
+                    changed = user_mod(cursor, user, host, host_all, password, encrypted,
+                                       priv, append_privs, module)
                 else:
-                    changed = user_mod(cursor, user, host, host_all, None, encrypted, priv, append_privs, module)
+                    changed = user_mod(cursor, user, host, host_all, None, encrypted, priv,
+                                       append_privs, module)
 
             except (SQLParseError, InvalidPrivsError, MySQLdb.Error) as e:
                 module.fail_json(msg=to_native(e), exception=traceback.format_exc())
@@ -636,7 +646,8 @@ def main():
             if host_all:
                 module.fail_json(msg="host_all parameter cannot be used when adding a user")
             try:
-                changed = user_add(cursor, user, host, host_all, password, encrypted, priv, module.check_mode)
+                changed = user_add(cursor, user, host, host_all, password, encrypted, priv,
+                                   module.check_mode)
             except (SQLParseError, InvalidPrivsError, MySQLdb.Error) as e:
                 module.fail_json(msg=to_native(e), exception=traceback.format_exc())
     elif state == "absent":

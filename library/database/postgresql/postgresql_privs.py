@@ -124,8 +124,8 @@ options:
     version_added: '2.3'
   ssl_rootcert:
     description:
-      - Specifies the name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be
-        verified to be signed by one of these authorities.
+      - Specifies the name of a file containing SSL certificate authority (CA) certificate(s). If the
+        file exists, the server's certificate will be verified to be signed by one of these authorities.
     required: false
     default: null
     version_added: '2.3'
@@ -555,7 +555,8 @@ def main():
             unix_socket=dict(default='', aliases=['login_unix_socket']),
             login=dict(default='postgres', aliases=['login_user']),
             password=dict(default='', aliases=['login_password'], no_log=True),
-            ssl_mode=dict(default="prefer", choices=['disable', 'allow', 'prefer', 'require', 'verify-ca', 'verify-full']),
+            ssl_mode=dict(default="prefer", choices=['disable', 'allow', 'prefer', 'require',
+                          'verify-ca', 'verify-full']),
             ssl_rootcert=dict(default=None)
         ),
         supports_check_mode=True

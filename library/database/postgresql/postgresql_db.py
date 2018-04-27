@@ -43,13 +43,14 @@ options:
     default: null
   lc_collate:
     description:
-      - Collation order (LC_COLLATE) to use in the database. Must match collation order of template database unless C(template0) is used as template.
+      - Collation order (LC_COLLATE) to use in the database. Must match collation order of template
+        database unless C(template0) is used as template.
     required: false
     default: null
   lc_ctype:
     description:
-      - Character classification (LC_CTYPE) to use in the database (e.g. lower, upper, ...) Must match LC_CTYPE of template database unless C(template0)
-        is used as template.
+      - Character classification (LC_CTYPE) to use in the database (e.g. lower, upper, ...) Must
+        match LC_CTYPE of template database unless C(template0) is used as template.
     required: false
     default: null
   state:

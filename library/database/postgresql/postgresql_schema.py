@@ -67,10 +67,11 @@ options:
     default: present
     choices: [ "present", "absent" ]
 notes:
-   - This module uses I(psycopg2), a Python PostgreSQL database adapter. You must ensure that psycopg2 is installed on
-     the host before using this module. If the remote host is the PostgreSQL server (which is the default case), then PostgreSQL must also be installed
-     on the remote host. For Ubuntu-based systems, install the C(postgresql), C(libpq-dev), and C(python-psycopg2) packages on the remote host before
-     using this module.
+   - This module uses I(psycopg2), a Python PostgreSQL database adapter. You must ensure that
+     psycopg2 is installed on the host before using this module. If the remote host is the
+     PostgreSQL server (which is the default case), then PostgreSQL must also be installed
+     on the remote host. For Ubuntu-based systems, install the C(postgresql), C(libpq-dev),
+     and C(python-psycopg2) packages on the remote host before using this module.
 requirements: [ psycopg2 ]
 author: "Flavien Chantelot <contact@flavien.io>"
 '''

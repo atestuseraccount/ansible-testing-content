@@ -78,7 +78,8 @@ options:
     ssl_cert_reqs:
         version_added: "2.2"
         description:
-            - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
+            - Specifies whether a certificate is required from the other side of the connection, and
+              whether it will be validated if provided.
         required: false
         default: "CERT_REQUIRED"
         choices: ["CERT_REQUIRED", "CERT_OPTIONAL", "CERT_NONE"]
@@ -87,10 +88,12 @@ options:
         description:
             - >
               The database user roles valid values could either be one or more of the following strings:
-              'read', 'readWrite', 'dbAdmin', 'userAdmin', 'clusterAdmin', 'readAnyDatabase', 'readWriteAnyDatabase', 'userAdminAnyDatabase',
+              'read', 'readWrite', 'dbAdmin', 'userAdmin', 'clusterAdmin', 'readAnyDatabase',
+              'readWriteAnyDatabase', 'userAdminAnyDatabase',
               'dbAdminAnyDatabase'
             - "Or the following dictionary '{ db: DATABASE_NAME, role: ROLE_NAME }'."
-            - "This param requires pymongo 2.5+. If it is a string, mongodb 2.4+ is also required. If it is a dictionary, mongo 2.6+  is required."
+            - "This param requires pymongo 2.5+. If it is a string, mongodb 2.4+ is also required. If
+              it is a dictionary, mongo 2.6+  is required."
         required: false
         default: "readWrite"
     state:
@@ -109,7 +112,8 @@ options:
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
-      can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
+      can be installed using pip or the OS package manager.
+      @see http://api.mongodb.org/python/current/installation.html
 requirements: [ "pymongo" ]
 author:
     - "Elliott Foster (@elliotttf)"
@@ -138,7 +142,8 @@ EXAMPLES = '''
     name: bob
     state: absent
 
-# Define more users with various specific roles (if not defined, no roles is assigned, and the user will be added via pre mongo 2.2 style)
+# Define more users with various specific roles (if not defined, no roles is assigned, and the user will be
+# added via pre mongo 2.2 style)
 - mongodb_user:
     database: burgers
     name: ben
@@ -167,9 +172,11 @@ EXAMPLES = '''
     roles: readWriteAnyDatabase
     state: present
 
-# add a user 'oplog_reader' with read only access to the 'local' database on the replica_set 'belcher'. This is useful for oplog access (MONGO_OPLOG_URL).
-# please notice the credentials must be added to the 'admin' database because the 'local' database is not syncronized and can't receive user credentials
-# To login with such user, the connection string should be MONGO_OPLOG_URL="mongodb://oplog_reader:oplog_reader_password@server1,server2/local?authSource=admin"
+# Add a user 'oplog_reader' with read only access to the 'local' database on the replica_set 'belcher'.
+# This is useful for oplog access (MONGO_OPLOG_URL). Please notice the credentials must be added to the
+# 'admin' database because the 'local' database is not syncronized and can't receive user credentials
+# To login with such user, the connection string should be
+# MONGO_OPLOG_URL="mongodb://oplog_reader:oplog_reader_password@server1,server2/local?authSource=admin"
 # This syntax requires mongodb 2.6+ and pymongo 2.5+
 - mongodb_user:
     login_user: root
@@ -360,7 +367,8 @@ def main():
             roles=dict(default=None, type='list'),
             state=dict(default='present', choices=['absent', 'present']),
             update_password=dict(default="always", choices=["always", "on_create"]),
-            ssl_cert_reqs=dict(default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
+            ssl_cert_reqs=dict(default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL',
+                                                                 'CERT_REQUIRED']),
         ),
         supports_check_mode=True
     )
@@ -408,13 +416,15 @@ def main():
                 login_user = mongocnf_creds['user']
                 login_password = mongocnf_creds['password']
         elif login_password is None or login_user is None:
-            module.fail_json(msg='when supplying login arguments, both login_user and login_password must be provided')
+            module.fail_json(msg='when supplying login arguments, both login_user and login_password must'
+                             'be provided')
 
         if login_user is not None and login_password is not None:
             client.admin.authenticate(login_user, login_password, source=login_database)
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
             if db_name != "admin":
-                module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
+                module.fail_json(msg='The localhost login exception only allows the first admin account to '
+                                 'be created')
             # else: this has to be the first admin user added
 
     except Exception as e:
@@ -422,7 +432,8 @@ def main():
 
     if state == 'present':
         if password is None and update_password == 'always':
-            module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
+            module.fail_json(msg='password parameter required when adding a user unless update_password'
+                             'is set to on_create')
 
         try:
             if update_password != 'always':
@@ -437,9 +448,11 @@ def main():
 
             user_add(module, client, db_name, user, password, roles)
         except Exception as e:
-            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())
+            module.fail_json(msg='Unable to add or update user: %s' % to_native(e),
+                             exception=traceback.format_exc())
 
-            # Here we can  check password change if mongo provide a query for that : https://jira.mongodb.org/browse/SERVER-22848
+            # Here we can  check password change if mongo provide a query for
+            # that : https://jira.mongodb.org/browse/SERVER-22848
             # newuinfo = user_find(client, user, db_name)
             # if uinfo['role'] == newuinfo['role'] and CheckPasswordHere:
             #    module.exit_json(changed=False, user=user)

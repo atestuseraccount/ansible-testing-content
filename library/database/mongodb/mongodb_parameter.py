@@ -79,7 +79,8 @@ options:
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
-      can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
+      can be installed using pip or the OS package manager. @see
+      http://api.mongodb.org/python/current/installation.html
 requirements: [ "pymongo" ]
 author: "Loic Blot (@nerzhul)"
 '''
@@ -200,7 +201,8 @@ def main():
                 login_user = mongocnf_creds['user']
                 login_password = mongocnf_creds['password']
         elif login_password is None or login_user is None:
-            module.fail_json(msg='when supplying login arguments, both login_user and login_password must be provided')
+            module.fail_json(msg='when supplying login arguments, both login_user and login_password '
+                             'must be provided')
 
         if login_user is not None and login_password is not None:
             client.admin.authenticate(login_user, login_password, source=login_database)

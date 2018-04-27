@@ -158,8 +158,9 @@ def main():
                                connect_timeout=connect_timeout)
     except Exception as e:
         if os.path.exists(config_file):
-            module.fail_json(msg="unable to connect to database, check login_user and login_password are correct or %s has the credentials. "
-                                 "Exception message: %s" % (config_file, to_native(e)))
+            module.fail_json(msg="unable to connect to database, check login_user and login_password"
+                             "are correct or %s has the credentials. "
+                             "Exception message: %s" % (config_file, to_native(e)))
         else:
             module.fail_json(msg="unable to find %s. Exception message: %s" % (config_file, to_native(e)))
 
