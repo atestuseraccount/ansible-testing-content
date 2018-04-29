@@ -6,4 +6,4 @@ Role for testing Ansible Galaxy
 License
 -------
 
-BSD
+(GNU](./LICENSE)
