@@ -140,7 +140,8 @@ def rekey_on_member(data, key, duplicates='error'):
     value would be duplicated or to overwrite previous entries if that's the case.
     """
     if duplicates not in ('error', 'overwrite'):
-        raise errors.AnsibleFilterError("duplicates parameter to rekey_on_member has unknown value: {0}".format(duplicates))
+        raise errors.AnsibleFilterError("duplicates parameter to rekey_on_member has unknown "
+                                        "value: {0}".format(duplicates))
 
     new_obj = {}
 

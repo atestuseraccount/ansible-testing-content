@@ -107,10 +107,9 @@ class StrategyModule(StrategyBase):
                 num_rescue += 1
             elif s.run_state == PlayIterator.ITERATING_ALWAYS:
                 num_always += 1
-        display.debug("done counting tasks in each state of execution:\n\tnum_setups: %s\n\tnum_tasks: %s\n\tnum_rescue: %s\n\tnum_always: %s" % (num_setups,
-                                                                                                                                                  num_tasks,
-                                                                                                                                                  num_rescue,
-                                                                                                                                                  num_always))
+
+        display.debug("done counting tasks in each state of execution:\n\tnum_setups: %s\n\tnum_tasks: %s\n\t"
+                      "num_rescue: %s\n\tnum_always: %s" % (num_setups, num_tasks, num_rescue, num_always))
 
         def _advance_selected_hosts(hosts, cur_block, cur_state):
             '''
@@ -131,7 +130,7 @@ class StrategyModule(StrategyBase):
                 if t is None:
                     continue
                 if s.run_state == cur_state and s.cur_block == cur_block:
-                    new_t = iterator.get_next_task_for_host(host)
+                    iterator.get_next_task_for_host(host)
                     rvals.append((host, t))
                 else:
                     rvals.append((host, noop_task))
@@ -225,7 +224,8 @@ class StrategyModule(StrategyBase):
                     if task._role and task._role.has_run(host):
                         # If there is no metadata, the default behavior is to not allow duplicates,
                         # if there is metadata, check to see if the allow_duplicates flag was set to true
-                        if task._role._metadata is None or task._role._metadata and not task._role._metadata.allow_duplicates:
+                        if task._role._metadata is None or task._role._metadata \
+                                and not task._role._metadata.allow_duplicates:
                             display.debug("'%s' skipped because role has already run" % task)
                             continue
 
@@ -250,19 +250,22 @@ class StrategyModule(StrategyBase):
                         templar = Templar(loader=self._loader, variables=task_vars)
                         display.debug("done getting variables")
 
-                        run_once = templar.template(task.run_once) or action and getattr(action, 'BYPASS_HOST_LOOP', False)
+                        run_once = templar.template(task.run_once) or action \
+                            and getattr(action, 'BYPASS_HOST_LOOP', False)
 
                         if (task.any_errors_fatal or run_once) and not task.ignore_errors:
                             any_errors_fatal = True
 
                         if not callback_sent:
-                            display.debug("sending task start callback, copying the task so we can template it temporarily")
+                            display.debug("sending task start callback, copying the task so we can "
+                                          "template it temporarily")
                             saved_name = task.name
                             display.debug("done copying, going to template now")
                             try:
-                                task.name = to_text(templar.template(task.name, fail_on_undefined=False), nonstring='empty')
+                                task.name = to_text(templar.template(task.name, fail_on_undefined=False),
+                                                    nonstring='empty')
                                 display.debug("done templating")
-                            except:
+                            except Exception:
                                 # just ignore any errors during task name templating,
                                 # we don't care if it just shows the raw name
                                 display.debug("templating failed for some reason")
@@ -279,8 +282,8 @@ class StrategyModule(StrategyBase):
                     # if we're bypassing the host loop, break out now
                     if run_once:
                         break
-
-                    results += self._process_pending_results(iterator, max_passes=max(1, int(len(self._tqm._workers) * 0.1)))
+                    max_passes = max(1, int(len(self._tqm._workers) * 0.1))
+                    results += self._process_pending_results(iterator, max_passes=max_passes)
 
                 # go to next host/task group
                 if skip_rest:
@@ -331,7 +334,8 @@ class StrategyModule(StrategyBase):
                                     variable_manager=self._variable_manager,
                                     loader=self._loader,
                                 )
-                                self._tqm.update_handler_list([handler for handler_block in handler_blocks for handler in handler_block.block])
+                                self._tqm.update_handler_list([handler for handler_block in handler_blocks
+                                                              for handler in handler_block.block])
                             else:
                                 new_blocks = self._load_included_file(included_file, iterator=iterator)
 
@@ -362,7 +366,6 @@ class StrategyModule(StrategyBase):
                                 self._tqm._failed_hosts[host.name] = True
                                 iterator.mark_host_failed(host)
                             display.error(to_text(e), wrap_text=False)
-                            include_failure = True
                             continue
 
                     # finally go through all of the hosts and append the
@@ -410,7 +413,8 @@ class StrategyModule(StrategyBase):
                                 iterator.mark_host_failed(host)
                         self._tqm.send_callback('v2_playbook_on_no_hosts_remaining')
                         result |= self._tqm.RUN_FAILED_BREAK_PLAY
-                    display.debug('(%s failed / %s total )> %s max fail' % (len(self._tqm._failed_hosts), iterator.batch_size, percentage))
+                    display.debug('(%s failed / %s total )> %s max fail' %
+                                  (len(self._tqm._failed_hosts), iterator.batch_size, percentage))
                 display.debug("done checking for max_fail_percentage")
 
                 display.debug("checking to see if all hosts have failed and the running result is not ok")

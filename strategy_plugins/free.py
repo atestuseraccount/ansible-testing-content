@@ -23,8 +23,9 @@ DOCUMENTATION = '''
     short_description: Executes tasks on each host independently
     description:
         - Task execution is as fast as possible per host in batch as defined by C(serial) (default all).
-          Ansible will not wait for other hosts to finish the current task before queuing the next task for a host that has finished.
-          Once a host is done with the play, it opens it's slot to a new host that was waiting to start.
+          Ansible will not wait for other hosts to finish the current task before queuing the next task
+          for a host that has finished. Once a host is done with the play, it opens it's slot to a new
+          host that was waiting to start.
     version_added: "2.0"
     author: Ansible Core Team
 '''
@@ -79,7 +80,8 @@ class StrategyModule(StrategyBase):
                 break
 
             work_to_do = False        # assume we have no more work to do
-            starting_host = last_host  # save current position so we know when we've looped back around and need to break
+            starting_host = last_host  # save current position so we know when we've looped
+                                       # back around and need to break
 
             # try and find an unblocked host with a task to run
             host_results = []
@@ -123,29 +125,33 @@ class StrategyModule(StrategyBase):
                         try:
                             task.name = to_text(templar.template(task.name, fail_on_undefined=False), nonstring='empty')
                             display.debug("done templating")
-                        except:
+                        except Exception:
                             # just ignore any errors during task name templating,
                             # we don't care if it just shows the raw name
                             display.debug("templating failed for some reason")
 
-                        run_once = templar.template(task.run_once) or action and getattr(action, 'BYPASS_HOST_LOOP', False)
+                        run_once = templar.template(task.run_once) or action and \
+                            getattr(action, 'BYPASS_HOST_LOOP', False)
                         if run_once:
                             if action and getattr(action, 'BYPASS_HOST_LOOP', False):
-                                raise AnsibleError("The '%s' module bypasses the host loop, which is currently not supported in the free strategy "
-                                                   "and would instead execute for every host in the inventory list." % task.action, obj=task._ds)
+                                raise AnsibleError("The '%s' module bypasses the host loop, which is currently not "
+                                                   "supported in the free strategy and would instead execute for "
+                                                   "every host in the inventory list." % task.action, obj=task._ds)
                             else:
-                                display.warning("Using run_once with the free strategy is not currently supported. This task will still be "
-                                                "executed for every host in the inventory list.")
+                                display.warning("Using run_once with the free strategy is not currently supported. "
+                                                "This task will still be executed for every host in the inventory "
+                                                "list.")
 
                         # check to see if this task should be skipped, due to it being a member of a
                         # role which has already run (and whether that role allows duplicate execution)
                         if task._role and task._role.has_run(host):
                             # If there is no metadata, the default behavior is to not allow duplicates,
                             # if there is metadata, check to see if the allow_duplicates flag was set to true
-                            if task._role._metadata is None or task._role._metadata and not task._role._metadata.allow_duplicates:
-                                display.debug("'%s' skipped because role has already run" % task)
-                                del self._blocked_hosts[host_name]
-                                continue
+                            if task._role._metadata is None or task._role._metadata \
+                               and not task._role._metadata.allow_duplicates:
+                                    display.debug("'%s' skipped because role has already run" % task)
+                                    del self._blocked_hosts[host_name]
+                                    continue
 
                         if task.action == 'meta':
                             self._execute_meta(task, play_context, iterator, target_host=host)
@@ -200,7 +206,8 @@ class StrategyModule(StrategyBase):
                                 variable_manager=self._variable_manager,
                                 loader=self._loader,
                             )
-                            self._tqm.update_handler_list([handler for handler_block in handler_blocks for handler in handler_block.block])
+                            self._tqm.update_handler_list([handler for handler_block in handler_blocks
+                                                           for handler in handler_block.block])
                         else:
                             new_blocks = self._load_included_file(included_file, iterator=iterator)
                     except AnsibleError as e:
