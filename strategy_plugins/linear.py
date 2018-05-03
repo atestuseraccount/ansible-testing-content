@@ -308,7 +308,6 @@ class StrategyModule(StrategyBase):
                     # this is a fatal error, so we abort here regardless of block state
                     return self._tqm.RUN_ERROR
 
-                include_failure = False
                 if len(included_files) > 0:
                     display.debug("we have included files to process")
 

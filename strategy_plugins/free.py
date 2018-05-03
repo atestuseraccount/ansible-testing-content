@@ -80,8 +80,9 @@ class StrategyModule(StrategyBase):
                 break
 
             work_to_do = False        # assume we have no more work to do
-            starting_host = last_host  # save current position so we know when we've looped
-                                       # back around and need to break
+
+            # save current position so we know when we've looped back around and need to break
+            starting_host = last_host
 
             # try and find an unblocked host with a task to run
             host_results = []
