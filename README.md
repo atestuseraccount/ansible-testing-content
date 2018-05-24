@@ -1,7 +1,7 @@
-Galaxy Test Role
-================
+Ansible Testing Content
+=======================
 
-Role for testing Ansible Galaxy
+Contains a variety of Ansible content that's used for testing the [Ansible Galaxy](https://galaxy.ansible.com) import process. 
 
 License
 -------
