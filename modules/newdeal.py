@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import json
+import sys
 
 from ansible.module_utils.dealio import get_stuff
 
@@ -21,6 +22,7 @@ def main():
         'stuff': get_stuff()
     }
     print(json.dumps(res))
+    sys.exit(0)
 
 
 if __name__ == "__main__":
