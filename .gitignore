@@ -1,1 +1,12 @@
 *.py[co]
+
+# mazer build results
+releases/
+
+# artifacts of update_collection.sh
+galaxy.yml.new
+galaxy.yml.bak
+
+# galaxy install tracking receipt
+# can happen with 'editable' installs
+meta/.galaxy_install_info
