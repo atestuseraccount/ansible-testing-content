@@ -1,6 +1,6 @@
 namespace: "alikins"
 name: "ansible_testing_content"
-version: "4.0.2"
+version: "4.0.3"
 description: "a collection for testing ansible collections"
 authors: ["Galaxy Team", "Adrian Likins"]
 license:
