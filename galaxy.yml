@@ -5,4 +5,8 @@ description: "a collection for testing ansible collections"
 authors: ["Galaxy Team", "Adrian Likins"]
 license:
   - "GPL-3.0-or-later"
+readme: "README.md"
+homepage: "https://github.com/alikins/ansible-testing-content"
+tags:
+  - collectiontest
 dependencies: {}
