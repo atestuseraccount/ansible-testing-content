@@ -10,7 +10,7 @@ __metaclass__ = type
 import json
 import sys
 
-from ansible.module_utils.newutil import get_stuff
+from ansible_collections.testing.ansible_testing_content.plugins.module_utils.newutil import get_stuff
 
 
 def main():
